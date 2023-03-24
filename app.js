@@ -7,8 +7,9 @@ const nunjucks = require("nunjucks");
 const dotenv = require("dotenv");
 
 dotenv.config();
-const webSocket = require("./socket");
 const indexRouter = require("./routes");
+// 웹소켓을 익스프레스 서버와 연결:
+const webSocket = require("./socket");
 
 const app = express();
 app.set("port", process.env.PORT || 8005);
@@ -50,6 +51,7 @@ app.use((err, req, res, next) => {
   res.render("error");
 });
 
+// 웹소켓을 익스프레스 서버와 연결:
 const server = app.listen(app.get("port"), () => {
   console.log(app.get("port"), "번 포트에서 대기중");
 });
