@@ -8,6 +8,8 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 const indexRouter = require("./routes");
+// 서버를 실행할 때 몽고디비에 바로 접속하도록 서버와 몽구스를 연결:
+const connect = require("./schemas");
 // 웹소켓을 익스프레스 서버와 연결:
 const webSocket = require("./socket");
 
@@ -18,6 +20,7 @@ nunjucks.configure("views", {
   express: app,
   watch: true,
 });
+connect();
 
 app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "public")));
