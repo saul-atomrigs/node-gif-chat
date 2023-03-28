@@ -5,6 +5,7 @@ const {
   renderChat,
   enterRoom,
   removeRoom,
+  sendChat,
 } = require("../controllers");
 
 const Room = require("../schemas/room");
@@ -94,6 +95,24 @@ router.delete("/room/:id", async (req, res, next) => {
     }, 2000);
   } catch (error) {
     console.error(error);
+    next(error);
+  }
+});
+
+// 채팅 보내기 라우터: router.post("/room/:id/chat", sendChat)
+router.post("/room/:id/chat", async (req, res, next) => {
+  try {
+    // 채팅을 DB에 저장:
+    const chat = await Chat.create({
+      room: req.params.id,
+      user: req.session.color,
+      chat: req.body.chat,
+    });
+    // 같은 방에 있는 소켓들에 메시지 데이터를 전송:
+    req.app.get("io").of("/chat").to(req.params.id).emit("chat", chat);
+    res.send("ok");
+  } catch (error) {
+    console.log(error);
     next(error);
   }
 });
