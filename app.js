@@ -23,11 +23,23 @@ nunjucks.configure("views", {
 });
 connect();
 
+// app.js와 socket.js 간에 express-session 미들웨어를 공유하기 위해 변수에 담아서 넘겨줌:
+const sessionMiddleware = session({
+  resave: false,
+  saveUninitialized: false,
+  secret: process.env.COOKIE_SECRET,
+  cookie: {
+    httpOnly: true,
+    secure: false,
+  },
+});
 app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
+app.use(sessionMiddleware);
+
 app.use(
   session({
     resave: false,
@@ -70,4 +82,4 @@ const server = app.listen(app.get("port"), () => {
   console.log(app.get("port"), "번 포트에서 대기중");
 });
 
-webSocket(server, id);
+webSocket(server, app, sessionMiddleware);
